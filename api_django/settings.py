@@ -1,5 +1,3 @@
-import pymysql
-pymysql.install_as_MySQLdb()
 
 """
 Django settings for api_django project.
