@@ -22,6 +22,7 @@ ALLOWED_HOSTS = [
       '127.0.0.1', 
       '0.0.0.0',
       'condominio-jht3.onrender.com',
+      'condominio-psi.vercel.app',
       ]
 
 # =========================
@@ -55,6 +56,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://condominio-psi.vercel.app",
 ]
 
 REST_FRAMEWORK = {
