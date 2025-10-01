@@ -11,7 +11,6 @@ import cv2
 import numpy as np
 from django.core.files.base import ContentFile
 from .models import Placa  # Asumiendo que tienes este modelo
-import easyocr
 from django.http import HttpResponse
 #------------------------
 # colegio/logica/agendavisita.py
@@ -19,12 +18,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import traceback
-from .models import Visita, Reserva,Pagos
+from .models import Visita, Reserva, Pagos
 from django.utils import timezone
 
 
 
-
+# Eliminamos la variable global reader y get_reader() para evitar cargas innecesarias
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @api_view(["POST"])
@@ -63,7 +62,6 @@ def stripe_webhook(request):
 
 @api_view(["POST"])
 @csrf_exempt
-
 def crear(request):
     try:
         usuario = request.session.get('usuario')
@@ -135,11 +133,24 @@ def analizar_placa(request):
         if imagen_cv is None:
             return JsonResponse({'error': 'Imagen no válida'}, status=400)
         
-        # Inicializar EasyOCR para español/inglés (dependiendo de tu país)
-        reader = easyocr.Reader(['en'])  # Usa ['es'] para placas en español
+        # ✅ IMPORTACIÓN DIFERIDA: EasyOCR solo se carga cuando se necesita
+        import easyocr
+        
+        # ✅ Configuración optimizada para ahorrar memoria
+        reader = easyocr.Reader(
+            ['en'], 
+            gpu=False,  # Forzar uso de CPU
+            download_enabled=False,  # Evitar descargas automáticas
+            model_storage_directory='/tmp/easyocr'  # Directorio temporal
+        )
         
         # Realizar OCR en la imagen
         resultados = reader.readtext(imagen_cv)
+        
+        # ✅ Limpiar recursos explícitamente
+        del reader
+        import gc
+        gc.collect()
         
         if not resultados:
             return JsonResponse({
@@ -207,5 +218,3 @@ def es_formato_placa_valido(texto):
         numeros = texto[3:]
         return letras.isalpha() and numeros.isdigit()
     return False
-
-    
