@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import (
-    Pais, Rol, Persona, RolPersona, Condominio, Unidad, AreaSocial,
+    Pais, Rol, Persona, RolPersona, Unidad, AreaSocial,
     Restriccion, RestriccionArea, Reserva, Incumplimiento, Pagos, Visita
 )
 
@@ -37,11 +37,6 @@ class RolPersonaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # -------------------- Condominio --------------------
-class CondominioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Condominio
-        fields = '__all__'
-
 # -------------------- Unidad --------------------
 class UnidadSerializer(serializers.ModelSerializer):
     class Meta:

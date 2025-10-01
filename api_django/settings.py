@@ -17,18 +17,28 @@ DEBUG = True
 # ALLOWED HOSTS
 # =========================
 ALLOWED_HOSTS = [
-    'yamanote.proxy.rlwy.net', 
-    'localhost',
-      '127.0.0.1', 
-      '0.0.0.0',
-      'condominio-jht3.onrender.com',
-      'condominio-psi.vercel.app',
-      ]
+    "yamanote.proxy.rlwy.net", 
+    "localhost",
+    "127.0.0.1", 
+    "0.0.0.0",
+    "condominio-jht3.onrender.com",
+    "condominio-psi.vercel.app",
+]
+
+STRIPE_SECRET_KEY = "sk_test_51RRklm4Zqdn7RVeShGNEhW7wo7nVUDZRenO3u5gRLtuygmV2iCzWB0OdPB6YxF8pYwqVSww887vkhE6GXgHfJw2Z00yWO4QYsY"
+STRIPE_PUBLIC_KEY = "pk_test_51RRklm4Zqdn7RVeS6rpZkRzHEQb5ZsZ3ud3Lj7SdElZskhVK0c2kbzXX7OHRDbriJ4u1MBNriwpPXUB89lS9LHi900U2jWD6it"
 
 # =========================
 # INSTALLED APPS (SIMPLIFICADO)
 # =========================
+# settings.py
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 INSTALLED_APPS = [
+        'corsheaders',  # ✅ SOLO el nombre de la app aquí
+    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,26 +47,29 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'colegio',
     'rest_framework',
-    'corsheaders',
+    'stripe',
 ]
 
 # =========================
 # MIDDLEWARE (SIMPLIFICADO)
 # =========================
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware',  # ✅ MOVE the MIDDLEWARE here
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    
+    
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "https://condominio-psi.vercel.app",
+    "http://127.0.0.1:3000",
 ]
 
 REST_FRAMEWORK = {
@@ -128,3 +141,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # AUTO FIELD
 # =========================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Agrega al FINAL del archivo settings.py:
+CORS_ALLOW_ALL_ORIGINS = True  # Para desarrollo (en producción especifica los dominios)
+CORS_ALLOW_CREDENTIALS = True

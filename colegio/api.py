@@ -1,13 +1,13 @@
 # colegio/api.py
 from .models import (
-    Pais, Rol, Persona, RolPersona, Condominio, Unidad, AreaSocial,
+    Pais, Rol, Persona, RolPersona, Unidad, AreaSocial,
     Restriccion, RestriccionArea, Reserva, Incumplimiento, Pagos, Visita
 )
 
 from rest_framework import viewsets, permissions
 from .serializer import (  # Cambié "serializer" por "serializers" (más común)
     PaisSerializer, RolSerializer, PersonaSerializer, RolPersonaSerializer, 
-    CondominioSerializer, UnidadSerializer, AreaSocialSerializer,
+    UnidadSerializer, AreaSocialSerializer,
     RestriccionSerializer, RestriccionAreaSerializer, ReservaSerializer, 
     IncumplimientoSerializer, PagosSerializer, VisitaSerializer
 )  # Corregí los nombres de las clases del serializer
@@ -33,10 +33,6 @@ class RolPersonaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RolPersonaSerializer
 
-class CondominioViewSet(viewsets.ModelViewSet):
-    queryset = Condominio.objects.all()
-    permission_classes = [permissions.AllowAny]
-    serializer_class = CondominioSerializer
 
 class UnidadViewSet(viewsets.ModelViewSet):
     queryset = Unidad.objects.all()

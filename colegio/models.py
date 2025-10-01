@@ -17,11 +17,8 @@ class Rol(models.Model):
     def __str__(self):
         return self.nombre
 
-# -------------------- Persona --------------------from django.contrib.auth.models import User
-from django.contrib.auth.models import User
-
+# -------------------- Persona --------------------
 class Persona(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     ci = models.CharField(max_length=40, blank=True, null=True)
     nombre = models.CharField(max_length=80)
     apellido_paterno = models.CharField(max_length=80, blank=True, null=True)
@@ -45,17 +42,14 @@ class RolPersona(models.Model):
         unique_together = ('persona', 'rol')
 
 # -------------------- Condominio --------------------
-class Condominio(models.Model):
-    nombre = models.CharField(max_length=120)
-    direccion = models.CharField(max_length=255, blank=True, null=True)
-    responsable = models.ForeignKey(Persona, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return self.nombre
 
 # -------------------- Unidad --------------------
 class Unidad(models.Model):
-    condominio = models.ForeignKey(Condominio, on_delete=models.CASCADE)
+    ESTADO_CHOICES = [
+        ('disponible', 'Disponible'),
+        ('ocupado', 'Ocupado'),
+    ]
+    
     propietario = models.ForeignKey(Persona, on_delete=models.SET_NULL, null=True)
     nro_modulo = models.PositiveSmallIntegerField(blank=True, null=True)
     nro_piso = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -63,7 +57,14 @@ class Unidad(models.Model):
     valor_mensual = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     capacidad = models.PositiveSmallIntegerField(blank=True, null=True)
     nro_contrato = models.CharField(max_length=80, blank=True, null=True)
+    estado = models.CharField(
+        max_length=20, 
+        choices=ESTADO_CHOICES, 
+        default='disponible'
+    )
 
+    def __str__(self):
+        return f"Unidad {self.nro_modulo}-{self.nro_piso}-{self.nro_habitacion} ({self.estado})"
 # -------------------- Área social --------------------
 class AreaSocial(models.Model):
     nombre = models.CharField(max_length=120)
@@ -119,6 +120,7 @@ class Incumplimiento(models.Model):
 
 # -------------------- Pagos --------------------
 class Pagos(models.Model):
+    reserva = models.ForeignKey(Reserva, on_delete=models.SET_NULL, null=True)
     persona = models.ForeignKey(Persona, on_delete=models.SET_NULL, null=True)
     unidad = models.ForeignKey(Unidad, on_delete=models.SET_NULL, null=True)
     monto = models.DecimalField(max_digits=12, decimal_places=2)
@@ -141,3 +143,30 @@ class Visita(models.Model):
     area_social = models.ForeignKey(AreaSocial, on_delete=models.SET_NULL, null=True, blank=True)
     unidad = models.ForeignKey(Unidad, on_delete=models.SET_NULL, null=True, blank=True)
     motivo = models.CharField(max_length=255, blank=True, null=True)
+class Placa(models.Model):
+    # Campos básicos que usas en tu vista
+    placa = models.CharField(max_length=10)  # Texto identificado de la placa
+    confianza = models.FloatField()  # Nivel de confianza del reconocimiento (0-1)
+    
+    # Campos adicionales recomendados
+    imagen_original = models.ImageField(
+        upload_to='placas/', 
+        null=True, 
+        blank=True,  # Opcional como tienes en tu código comentado
+        help_text='Imagen original de la placa vehicular'
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    
+    # Estado del procesamiento (opcional)
+    procesado = models.BooleanField(default=True)
+    observaciones = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'placas'
+        verbose_name = 'Placa Vehicular'
+        verbose_name_plural = 'Placas Vehiculares'
+        ordering = ['-fecha_creacion']  # Más recientes primero
+
+    def __str__(self):
+        return f"{self.placa} ({self.confianza:.2%})"
